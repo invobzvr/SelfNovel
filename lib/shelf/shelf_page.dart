@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:file_picker/file_picker.dart';
+import 'package:kxlib/kxlib.dart' as kx show AttachDialogOption;
 
 import 'package:selfnovel/model/novel.dart';
 import 'package:selfnovel/utils/sql.dart';
@@ -31,19 +32,33 @@ class _ShelfPageState extends State<ShelfPage> with AutomaticKeepAliveClientMixi
             ),
             itemCount: ss.data?.length ?? 0,
             itemBuilder: (ctx, idx) {
+              Novel nvl = ss.data[idx];
               return Card(
                 elevation: 5,
                 clipBehavior: Clip.antiAlias,
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                 child: InkWell(
-                  child: Center(child: Text(ss.data[idx].name)),
+                  child: Center(child: Text(nvl.name)),
                   onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (ctx) => ReaderPage(ss.data[idx])),
+                      MaterialPageRoute(builder: (ctx) => ReaderPage(nvl)),
                     );
                   },
-                  onLongPress: () => SQL.delete(ss.data[idx]).then((val) => setState(() {})),
+                  onLongPress: () {
+                    showDialog(
+                      context: context,
+                      builder: (ctx) => SimpleDialog(
+                        children: [
+                          SimpleDialogOption(
+                            child: Text('Delete'),
+                            onPressed: () => SQL.delete(nvl).then((val) => Navigator.pop(context)).then((val) => setState(() {})),
+                          ),
+                          kx.AttachDialogOption(nvl),
+                        ],
+                      ),
+                    );
+                  },
                 ),
               );
             },
@@ -56,7 +71,7 @@ class _ShelfPageState extends State<ShelfPage> with AutomaticKeepAliveClientMixi
           FilePicker.getFilePath(
             type: FileType.CUSTOM,
             fileExtension: 'txt',
-          ).then((fp) => SQL.insert(Novel.init(fp))).then((val) => setState(() {}));
+          ).then((fp) => fp != null ? SQL.insert(Novel.init(fp)) : null).then((val) => setState(() {}));
         },
       ),
     );

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import 'package:kxlib/kxlib.dart' as kx show ChapterView; // ignore: UNUSED_IMPORT
+
 import 'package:selfnovel/model/novel.dart';
-import 'package:selfnovel/reader/chapter_view.dart';
+import 'package:selfnovel/reader/chapter_view.dart'; // ignore: UNUSED_IMPORT
 
 class ReaderPage extends StatefulWidget {
   ReaderPage(this.nvl);
@@ -32,7 +34,7 @@ class _ReaderPageState extends State<ReaderPage> {
       controller: PageController(initialPage: widget.nvl.progress),
       itemCount: widget.nvl.catalog.length,
       itemBuilder: (ctx, idx) {
-        return ChapterView(widget.nvl.catalog[idx]);
+        return kx.ChapterView(widget.nvl.catalog[idx]);
       },
     );
   }
