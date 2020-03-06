@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:file_picker/file_picker.dart';
-import 'package:kxlib/kxlib.dart' as kx show AttachDialogOption;
+import 'package:kxlib/kxlib.dart' as kx show AttachDialogOption; // ignore: UNUSED_IMPORT
 
 import 'package:selfnovel/model/novel.dart';
 import 'package:selfnovel/utils/sql.dart';
@@ -54,6 +54,22 @@ class _ShelfPageState extends State<ShelfPage> with AutomaticKeepAliveClientMixi
                             child: Text('Delete'),
                             onPressed: () => SQL.delete(nvl).then((val) => Navigator.pop(context)).then((val) => setState(() {})),
                           ),
+                          SimpleDialogOption(
+                            child: Text('Parse Catalog'),
+                            onPressed: () {
+                              Navigator.pop(context);
+                              showDialog(
+                                context: context,
+                                builder: (ctx) => AlertDialog(
+                                  content: TextFormField(
+                                    autofocus: true,
+                                    initialValue: r'[\n\r]{1,2}[^\u3000\n\r]+[\n\r]{1,2}\u3000',
+                                    onFieldSubmitted: (str) => SQL.update(nvl..parseCatalog(str)).then((val) => Navigator.pop(ctx)),
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
                           kx.AttachDialogOption(nvl),
                         ],
                       ),
@@ -71,7 +87,11 @@ class _ShelfPageState extends State<ShelfPage> with AutomaticKeepAliveClientMixi
           FilePicker.getFilePath(
             type: FileType.CUSTOM,
             fileExtension: 'txt',
-          ).then((fp) => fp != null ? SQL.insert(Novel.init(fp)) : null).then((val) => setState(() {}));
+          ).then((fp) {
+            if (fp == null) return;
+            SQL.insert(Novel.init(fp));
+            setState(() {});
+          });
         },
       ),
     );

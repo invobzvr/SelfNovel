@@ -9,6 +9,7 @@ class ChapterView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    cpt.set();
     return SingleChildScrollView(
       child: Material(
         color: Colors.white,

@@ -39,6 +39,15 @@ class SQL {
     );
   }
 
+  static Future<int> updateProgress(Novel novel) async {
+    return await _db.update(
+      'novels',
+      {'progress': novel.progress},
+      where: 'rowid=?',
+      whereArgs: [novel.id],
+    );
+  }
+
   static Future<int> delete(Novel novel) async {
     return await _db.delete(
       'novels',

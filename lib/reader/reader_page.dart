@@ -16,26 +16,48 @@ class ReaderPage extends StatefulWidget {
 }
 
 class _ReaderPageState extends State<ReaderPage> {
+  PageController pc;
+
   @override
   void initState() {
+    pc = PageController(initialPage: widget.nvl.progress);
     SystemChrome.setEnabledSystemUIOverlays([]);
     super.initState();
   }
 
   @override
   void dispose() {
+    pc.dispose();
     SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.top]);
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return PageView.builder(
-      controller: PageController(initialPage: widget.nvl.progress),
-      itemCount: widget.nvl.catalog.length,
-      itemBuilder: (ctx, idx) {
-        return kx.ChapterView(widget.nvl.catalog[idx]);
-      },
+    List ctlg = widget.nvl.catalog;
+    return Scaffold(
+      drawer: Drawer(
+        child: ListView.separated(
+          separatorBuilder: (ctx, idx) => const Divider(height: 0),
+          itemCount: ctlg.length,
+          itemBuilder: (ctx, idx) {
+            return ListTile(
+              title: Text(ctlg[idx].title),
+              onTap: () {
+                pc.jumpToPage(idx);
+                Navigator.pop(context);
+              },
+            );
+          },
+        ),
+      ),
+      body: PageView.builder(
+        controller: pc,
+        itemCount: ctlg.length,
+        itemBuilder: (ctx, idx) {
+          return kx.ChapterView(ctlg[idx]);
+        },
+      ),
     );
   }
 }

@@ -1,4 +1,5 @@
 import 'package:selfnovel/model/novel.dart';
+import 'package:selfnovel/utils/sql.dart';
 
 class Chapter {
   Novel novel;
@@ -26,5 +27,7 @@ class Chapter {
         'tag': tag,
       };
 
-  String get text => novel.text.substring(start, novel.catalog[index + 1].start);
+  Future<int> set() async => await SQL.updateProgress(novel..progress = index);
+
+  String get text => novel.text.substring(start, novel[index + 1]?.start);
 }
