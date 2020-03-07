@@ -12,6 +12,10 @@ class App extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
+      darkTheme: ThemeData(
+        brightness: Brightness.dark,
+        accentColor: Colors.blue,
+      ),
       home: ShelfPage(),
     );
   }
