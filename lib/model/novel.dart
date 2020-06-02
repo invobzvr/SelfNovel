@@ -4,18 +4,18 @@ import 'dart:io';
 import 'package:selfnovel/model/chapter.dart';
 
 class Novel {
-  Novel(this.id, this.name, this.path, this.catalog, this.progress);
-
   int id;
   String name;
   String path;
+  int ts;
   List<Chapter> catalog;
   int progress;
 
   String _text;
 
   Novel.init(this.path) {
-    name = path.split('/').last;
+    ts = DateTime.now().millisecondsSinceEpoch;
+    name = RegExp('.+[\\/](.*?)\.txt').firstMatch(path).group(1);
     parseCatalog('第.*?章.*');
     progress = 0;
   }
@@ -24,6 +24,7 @@ class Novel {
     id = map['rowid'] as int;
     name = map['name'] as String;
     path = map['path'] as String;
+    ts = map['ts'] as int;
     catalog = [for (dynamic cpt in jsonDecode(map['catalog']) as List<dynamic>) Chapter.fromMap(this, cpt)];
     progress = map['progress'] as int;
   }
@@ -36,6 +37,7 @@ class Novel {
   Map<String, dynamic> toMap() => {
         'name': name,
         'path': path,
+        'ts': ts,
         'catalog': jsonEncode([for (Chapter cpt in catalog) cpt.toMap()]),
         'progress': progress,
       };

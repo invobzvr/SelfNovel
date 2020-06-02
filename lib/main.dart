@@ -1,8 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import 'package:selfnovel/shelf/shelf_page.dart';
+import 'package:selfnovel/utils/sql.dart';
 
-void main() => runApp(App());
+void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(statusBarColor: Colors.transparent));
+  SQL.init().then((val) => runApp(App()));
+}
 
 class App extends StatelessWidget {
   @override
