@@ -45,7 +45,7 @@ class _ReaderPageState extends State<ReaderPage> {
               title: Text(ctlg[idx].title),
               onTap: () {
                 pc.jumpToPage(idx);
-                Navigator.pop(context);
+                Navigator.pop(ctx);
               },
             );
           },
@@ -54,9 +54,7 @@ class _ReaderPageState extends State<ReaderPage> {
       body: PageView.builder(
         controller: pc,
         itemCount: ctlg.length,
-        itemBuilder: (ctx, idx) {
-          return kx.ChapterView(ctlg[idx]);
-        },
+        itemBuilder: (ctx, idx) => kx.ChapterView(ctlg[idx]),
       ),
     );
   }

@@ -2,14 +2,14 @@ import 'package:selfnovel/model/novel.dart';
 import 'package:selfnovel/utils/sql.dart';
 
 class Chapter {
+  Chapter(this.novel, this.title, this.start, this.end);
+
   Novel novel;
   int index;
   String title;
   int start;
   int end;
   String tag;
-
-  Chapter(this.novel, this.title, this.start, this.end);
 
   Chapter.fromMap(this.novel, Map<String, dynamic> map) {
     index = map['index'] as int;
@@ -29,5 +29,5 @@ class Chapter {
 
   Future<int> set() async => await SQL.updateProgress(novel..progress = index);
 
-  String get text => novel.text.substring(start, novel[index + 1]?.start);
+  String get text => novel.text.substring(start, novel[index + 1]?.start).trim();
 }

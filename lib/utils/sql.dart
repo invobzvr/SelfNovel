@@ -16,7 +16,7 @@ class SQL {
     db = await openDatabase(
       join(dbPath, _DB_NAME),
       version: 1,
-      onCreate: (db, ver) async => await db.execute('CREATE TABLE novels(name TEXT,path TEXT,ts INT,catalog TEXT,progress INT)'),
+      onCreate: (db, ver) async => await db.execute('CREATE TABLE novels(name TEXT,author TEXT,cover TEXT,path TEXT,ts INT,catalog TEXT,progress INT)'),
     );
   }
 

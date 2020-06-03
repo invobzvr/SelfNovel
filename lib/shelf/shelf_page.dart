@@ -31,7 +31,7 @@ class _ShelfPageState extends State<ShelfPage> {
       appBar: AppBar(title: Text('Shelf')),
       body: ListView.builder(
         itemCount: list.length,
-        itemBuilder: (ctx, idx) {
+        itemBuilder: (lvCtx, idx) {
           Novel nvl = list[idx];
           return Card(
             elevation: 5,
@@ -47,6 +47,7 @@ class _ShelfPageState extends State<ShelfPage> {
                       width: 90,
                       height: 120,
                       color: Colors.primaries[Random().nextInt(Colors.primaries.length)].withAlpha(125),
+                      child: nvl.cover == null ? null : Image.network(nvl.cover),
                     ),
                     const SizedBox(width: 10),
                     Expanded(
@@ -54,9 +55,9 @@ class _ShelfPageState extends State<ShelfPage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(nvl.name, style: const TextStyle(fontSize: 17, fontWeight: FontWeight.bold)),
-                          const SizedBox(height: 10),
-                          Text(nvl.catalog[nvl.progress].title),
+                          Text(nvl.author ?? '\x01', style: TextStyle(fontStyle: FontStyle.italic)),
                           const SizedBox(height: 5),
+                          Text(nvl.catalog[nvl.progress].title, softWrap: false, overflow: TextOverflow.ellipsis),
                           Text(DateTime.fromMillisecondsSinceEpoch(nvl.ts).toString())
                         ],
                       ),
@@ -64,41 +65,39 @@ class _ShelfPageState extends State<ShelfPage> {
                   ],
                 ),
               ),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (ctx) => ReaderPage(nvl)),
-                );
-              },
+              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (prCtx) => ReaderPage(nvl))),
               onLongPress: () {
                 showDialog(
                   context: context,
-                  builder: (ctx) => SimpleDialog(
+                  builder: (sdCtx) => SimpleDialog(
                     children: [
                       SimpleDialogOption(
                         child: Text('Parse Catalog'),
                         onPressed: () {
-                          Navigator.pop(context);
+                          Navigator.pop(sdCtx);
                           showDialog(
                             context: context,
-                            builder: (ctx) => AlertDialog(
+                            builder: (adCtx) => AlertDialog(
                               content: TextFormField(
                                 autofocus: true,
-                                initialValue: r'[\n\r]{1,2}[^\u3000\n\r]+[\n\r]{1,2}\u3000',
-                                onFieldSubmitted: (str) => SQL.update(nvl..parseCatalog(str)).then((val) => Navigator.pop(ctx)),
+                                initialValue: r'[\n\r]{1,2}([^\u3000\n\r]+)[\n\r]{1,2}\u3000',
+                                onFieldSubmitted: (str) async {
+                                  await SQL.update(nvl..parseCatalog(str));
+                                  Navigator.pop(adCtx);
+                                },
                               ),
                             ),
                           );
                         },
                       ),
-                      kx.AttachDialogOption(nvl),
+                      kx.AttachDialogOption(context, nvl),
                       SimpleDialogOption(
                         child: Text('Delete'),
-                        onPressed: () {
+                        onPressed: () async {
                           list.remove(nvl);
-                          SQL.delete(nvl);
+                          await SQL.delete(nvl);
                           setState(() {});
-                          Navigator.pop(context);
+                          Navigator.pop(sdCtx);
                         },
                       ),
                     ],
@@ -115,11 +114,11 @@ class _ShelfPageState extends State<ShelfPage> {
           FilePicker.getFilePath(
             type: FileType.CUSTOM,
             fileExtension: 'txt',
-          ).then((fp) {
+          ).then((fp) async {
             if (fp == null) return;
             Novel nvl = Novel.init(fp);
             list.add(nvl);
-            SQL.insert(nvl);
+            await SQL.insert(nvl).then((id) => nvl.id = id);
             setState(() {});
           });
         },
