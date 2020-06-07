@@ -2,11 +2,12 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 
 import 'package:file_picker/file_picker.dart';
-import 'package:kxlib/kxlib.dart' as kx show AttachDialogOption; // ignore: UNUSED_IMPORT
+import 'package:kxlib/kxlib.dart' as kx; // ignore: UNUSED_IMPORT
 
 import 'package:selfnovel/model/novel.dart';
+import 'package:selfnovel/utils/re.dart';
 import 'package:selfnovel/utils/sql.dart';
-import 'package:selfnovel/reader/reader_page.dart';
+import 'package:selfnovel/reader/reader_page.dart'; // ignore: UNUSED_IMPORT
 
 class ShelfPage extends StatefulWidget {
   @override
@@ -28,7 +29,7 @@ class _ShelfPageState extends State<ShelfPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Shelf')),
+      appBar: AppBar(title: const Text('Shelf')),
       body: ListView.builder(
         itemCount: list.length,
         itemBuilder: (lvCtx, idx) {
@@ -55,7 +56,7 @@ class _ShelfPageState extends State<ShelfPage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(nvl.name, style: const TextStyle(fontSize: 17, fontWeight: FontWeight.bold)),
-                          Text(nvl.author ?? '\x01', style: TextStyle(fontStyle: FontStyle.italic)),
+                          Text(nvl.author ?? '\x01', style: const TextStyle(fontStyle: FontStyle.italic)),
                           const SizedBox(height: 5),
                           Text(nvl.catalog[nvl.progress].title, softWrap: false, overflow: TextOverflow.ellipsis),
                           Text(DateTime.fromMillisecondsSinceEpoch(nvl.ts).toString())
@@ -65,7 +66,7 @@ class _ShelfPageState extends State<ShelfPage> {
                   ],
                 ),
               ),
-              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (prCtx) => ReaderPage(nvl))),
+              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (prCtx) => kx.ReaderPage(nvl))),
               onLongPress: () {
                 showDialog(
                   context: context,
@@ -80,7 +81,7 @@ class _ShelfPageState extends State<ShelfPage> {
                             builder: (adCtx) => AlertDialog(
                               content: TextFormField(
                                 autofocus: true,
-                                initialValue: r'[\n\r]{1,2}([^\u3000\n\r]+)[\n\r]{1,2}\u3000',
+                                initialValue: RE.bookCatalog_p,
                                 onFieldSubmitted: (str) async {
                                   await SQL.update(nvl..parseCatalog(str));
                                   Navigator.pop(adCtx);

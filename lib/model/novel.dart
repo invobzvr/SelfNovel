@@ -2,12 +2,13 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:selfnovel/model/chapter.dart';
+import 'package:selfnovel/utils/re.dart';
 
 class Novel {
   Novel.init(this.path) {
     ts = DateTime.now().millisecondsSinceEpoch;
-    name = RegExp('.+[\\/](.*?)\.txt').firstMatch(path).group(1);
-    parseCatalog('[\n\r]*?(第.*?章.*)[\n\r]+');
+    name = RegExp(RE.bookName).firstMatch(path).group(1);
+    parseCatalog(RE.bookCatalog);
   }
 
   int id;
@@ -48,7 +49,7 @@ class Novel {
       };
 
   void parseCatalog(String source) {
-    catalog = RegExp(source).allMatches(text).map((im) => Chapter(this, im.group(1), im.start, im.end)).toList();
+    catalog = RegExp(source, multiLine: true).allMatches(text).map((im) => Chapter(this, im.group(1), im.start, im.end)).toList();
     catalog.forEach((cpt) => cpt.index = catalog.indexOf(cpt));
   }
 

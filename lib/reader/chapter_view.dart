@@ -19,11 +19,12 @@ class ChapterView extends StatelessWidget {
   Widget build(BuildContext context) {
     cpt.set();
     return ListView.builder(
+      padding: EdgeInsets.zero,
       itemCount: pars.length,
       itemBuilder: (ctx, idx) {
         return ListTile(
           contentPadding: const EdgeInsets.symmetric(horizontal: 20),
-          title: Text(pars[idx].text, style: idx > 0 ? null : const TextStyle(fontWeight: FontWeight.bold)),
+          title: Text(pars[idx].text, style: idx > 0 ? null : const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
         );
       },
     );

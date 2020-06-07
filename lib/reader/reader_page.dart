@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import 'package:kxlib/kxlib.dart' as kx show ChapterView; // ignore: UNUSED_IMPORT
-
 import 'package:selfnovel/model/novel.dart';
-import 'package:selfnovel/reader/chapter_view.dart'; // ignore: UNUSED_IMPORT
+import 'package:selfnovel/reader/reader_drawer.dart';
+import 'package:selfnovel/reader/chapter_view.dart';
 
 class ReaderPage extends StatefulWidget {
   ReaderPage(this.nvl);
@@ -34,27 +33,12 @@ class _ReaderPageState extends State<ReaderPage> {
 
   @override
   Widget build(BuildContext context) {
-    List ctlg = widget.nvl.catalog;
     return Scaffold(
-      drawer: Drawer(
-        child: ListView.separated(
-          separatorBuilder: (ctx, idx) => const Divider(height: 0),
-          itemCount: ctlg.length,
-          itemBuilder: (ctx, idx) {
-            return ListTile(
-              title: Text(ctlg[idx].title),
-              onTap: () {
-                pc.jumpToPage(idx);
-                Navigator.pop(ctx);
-              },
-            );
-          },
-        ),
-      ),
+      drawer: ReaderDrawer(widget.nvl, pc),
       body: PageView.builder(
         controller: pc,
-        itemCount: ctlg.length,
-        itemBuilder: (ctx, idx) => kx.ChapterView(ctlg[idx]),
+        itemCount: widget.nvl.catalog.length,
+        itemBuilder: (ctx, idx) => ChapterView(widget.nvl.catalog[idx]),
       ),
     );
   }
